@@ -110,8 +110,8 @@ while(True):
                 x,y,w,h = cv2.boundingRect(cnt)
                 cv2.rectangle(image,(x,y),(x+w,y+h),(0,255,0),2)
 #getting variables for the centroids
-                cx = x + w/2
-                cy = y + h/2
+                cx = int(x + w/2)
+                cy = int(y + h/2)
                 cen = (cx,cy)
                 cv2.circle(image, (cx,cy), 7, (255,0,0), -1)
 
