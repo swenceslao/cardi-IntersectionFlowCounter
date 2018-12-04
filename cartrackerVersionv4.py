@@ -100,8 +100,8 @@ def morphTrans(frame):
     
         
         #frame_delta = cv2.GaussianBlur(frame_delta,(11,11),0)
-        thresh= cv2.GaussianBlur(frame,(21,21),0)
-        thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, None , iterations=5)
+        thresh1= cv2.GaussianBlur(frame,(21,21),0)
+        thresh = cv2.morphologyEx(thresh1, cv2.MORPH_CLOSE, None , iterations=5)
             # Create a threshold to exclude minute movements
         thresh = cv2.threshold(thresh,4,300,cv2.THRESH_BINARY)[1]
         
@@ -116,7 +116,7 @@ def morphTrans(frame):
         thresh = cv2.GaussianBlur(thresh,(3,3),0)
         
         thresh= cv2.morphologyEx(thresh, cv2.MORPH_OPEN, None,iterations=10) 
-        return thresh
+        return thresh1
 
 #************** Transform *******************
 def morphTrans1(image):
@@ -339,13 +339,13 @@ def textDisp(framenumber,image,currentcars,carids,fps,frames_count,a,b,c,d):
                   #  + ' sec', (0, 60), cv2.FONT_HERSHEY_SIMPLEX, .4, (255,255,255), 1)
 
    
-    cv2.putText(image, "N-SB: "  + str(a),  (175, 15), cv2.FONT_HERSHEY_SIMPLEX, .4, (255,255,255), 1)
-    cv2.putText(image, "W-SB:  " + str(b) , (175, 45), cv2.FONT_HERSHEY_SIMPLEX, .4,
+    cv2.putText(image, "To AdMU: "  + str(a),  (175, 15), cv2.FONT_HERSHEY_SIMPLEX, .4, (255,255,255), 1)
+    cv2.putText(image, "N-SB:  " + str(b) , (175, 45), cv2.FONT_HERSHEY_SIMPLEX, .4,
                     (255,255,255), 1)
 
 
-    cv2.putText(image, "S-NB: " + str(c), (250, 15), cv2.FONT_HERSHEY_SIMPLEX, .4, (255,255,255), 1)
-    cv2.putText(image, "W-NB: " + str(d), (250,45), cv2.FONT_HERSHEY_SIMPLEX, .4,(255,255,255), 1)
+    cv2.putText(image, "S-NB: " + str(c), (350, 15), cv2.FONT_HERSHEY_SIMPLEX, .4, (255,255,255), 1)
+    cv2.putText(image, "Unident: " + str(d), (350,45), cv2.FONT_HERSHEY_SIMPLEX, .4,(255,255,255), 1)
    
 
 
