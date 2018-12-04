@@ -79,8 +79,8 @@ def predict(df):
     # Do it 10,000 times and make small adjustments each time.
     neural_network.train(training_set_inputs, training_set_outputs, 10000)
 
-    #print "New synaptic weights after training: "
-    #print neural_network.synaptic_weights
+    print "New synaptic weights after training: "
+    print neural_network.synaptic_weights
 
     a=0
     b=0
