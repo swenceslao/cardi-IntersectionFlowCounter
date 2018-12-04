@@ -100,8 +100,8 @@ def morphTrans(frame):
     
         
         #frame_delta = cv2.GaussianBlur(frame_delta,(11,11),0)
-        thresh1= cv2.GaussianBlur(frame,(21,21),0)
-        thresh = cv2.morphologyEx(thresh1, cv2.MORPH_CLOSE, None , iterations=5)
+        thresh= cv2.GaussianBlur(frame,(21,21),0)
+        thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, None , iterations=5)
             # Create a threshold to exclude minute movements
         thresh = cv2.threshold(thresh,4,300,cv2.THRESH_BINARY)[1]
         
@@ -115,8 +115,8 @@ def morphTrans(frame):
         #
         thresh = cv2.GaussianBlur(thresh,(3,3),0)
         
-        thresh= cv2.morphologyEx(thresh, cv2.MORPH_OPEN, None,iterations=20) 
-        return frame
+        thresh= cv2.morphologyEx(thresh, cv2.MORPH_OPEN, None,iterations=10) 
+        return thresh
 
 #************** Transform *******************
 def morphTrans1(image):
