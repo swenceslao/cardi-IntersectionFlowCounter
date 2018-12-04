@@ -91,25 +91,32 @@ def getDist(frame1 ,frame2):
     image1 = np.float32(frame1)
     image2 = np.float32(frame2)
     diff = image1-image2
-    norm = np.sqrt(diff[:,:,0]**2 + diff[:,:,1]**2+diff[:,:,2]**2) / np.sqrt(255**2+ 255**2 + 255**2)
+    norm = np.sqrt(diff[:,:,0]**1+ diff[:,:,1]**1+diff[:,:,2]**1) / np.sqrt(255**1+ 255**1+ 255**1)
     dist = np.uint8(norm*255)
     return dist
 
 ##************** Transform 1 *******************
-def morphTrans(image):
-    blur = cv2.GaussianBlur(dist,(9,9),0)
-    #grayIm = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
-    th = 10
-    imask =  blur > th
-    canvas = np.zeros_like(frame1, np.uint8)
-    canvas[imask] = frame[imask]
-    grayIm = cv2.cvtColor(canvas, cv2.COLOR_BGR2GRAY)
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (30,30))
-    dilation = cv2.dilate(canvas, kernel) 
-    opening = cv2.morphologyEx(dilation, cv2.MORPH_ERODE, kernel)
-    mask =closing
-    return mask
+def morphTrans(frame):
+    
+        
+        #frame_delta = cv2.GaussianBlur(frame_delta,(11,11),0)
+        thresh1= cv2.GaussianBlur(frame,(21,21),0)
+        thresh = cv2.morphologyEx(thresh1, cv2.MORPH_CLOSE, None , iterations=5)
+            # Create a threshold to exclude minute movements
+        thresh = cv2.threshold(thresh,4,300,cv2.THRESH_BINARY)[1]
+        
 
+        #thresh = cv2.GaussianBlur(thresh,(21,21),0)
+
+       
+        thresh = cv2.dilate(thresh,None,iterations=2)
+        thresh= cv2.morphologyEx(thresh, cv2.MORPH_ERODE, None,iterations=2)
+            #Dialate threshold to further reduce error
+        #
+        thresh = cv2.GaussianBlur(thresh,(3,3),0)
+        
+        thresh= cv2.morphologyEx(thresh, cv2.MORPH_OPEN, None,iterations=20) 
+        return frame
 
 #************** Transform *******************
 def morphTrans1(image):
@@ -332,23 +339,15 @@ def textDisp(framenumber,image,currentcars,carids,fps,frames_count,a,b,c,d):
                   #  + ' sec', (0, 60), cv2.FONT_HERSHEY_SIMPLEX, .4, (255,255,255), 1)
 
    
-    cv2.putText(image, "N-SB: "  ,  (175, 15), cv2.FONT_HERSHEY_SIMPLEX, .4, (255,255,255), 1)
-    cv2.putText(image, "W-SB:  " + str(a) , (175, 45), cv2.FONT_HERSHEY_SIMPLEX, .4,
+    cv2.putText(image, "N-SB: "  + str(a),  (175, 15), cv2.FONT_HERSHEY_SIMPLEX, .4, (255,255,255), 1)
+    cv2.putText(image, "W-SB:  " + str(b) , (175, 45), cv2.FONT_HERSHEY_SIMPLEX, .4,
                     (255,255,255), 1)
 
 
-    cv2.putText(image, "S-NB: " , (250, 15), cv2.FONT_HERSHEY_SIMPLEX, .4, (255,255,255), 1)
-    cv2.putText(image, "W-NB: " + str(b), (250,45), cv2.FONT_HERSHEY_SIMPLEX, .4,(255,255,255), 1)
+    cv2.putText(image, "S-NB: " + str(c), (250, 15), cv2.FONT_HERSHEY_SIMPLEX, .4, (255,255,255), 1)
+    cv2.putText(image, "W-NB: " + str(d), (250,45), cv2.FONT_HERSHEY_SIMPLEX, .4,(255,255,255), 1)
    
 
-    cv2.putText(image, "S-NB AdMU: " , (350, 15), cv2.FONT_HERSHEY_SIMPLEX, .4, (255,255,255), 1)
-    cv2.putText(image, "W-E AdMU:  " + str(c) , (350,45), cv2.FONT_HERSHEY_SIMPLEX, .4,
-                    (255,255,255), 1)
-
-
-    cv2.putText(image, "N-B AdMU: " , (450, 15), cv2.FONT_HERSHEY_SIMPLEX, .4, (255,255,255), 1)
-    cv2.putText(image, "From Ateneo:  " + str(d), (450,45), cv2.FONT_HERSHEY_SIMPLEX, .4,
-                    (255,255,255), 1)
 
     
 
@@ -367,19 +366,29 @@ while(True):
 
 #---------Capture two frames
  
-    _ , frame1 = cap.read()
+    _ , frame = cap.read()
+    _ , frame2 = cap.read()
+    frame1=frame
+    dist = cv2.absdiff(frame1,frame2)
+    blur = cv2.GaussianBlur(dist,(9,9),0)
+    #grayIm = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
+    th = 10
+    imask =  blur > th
+    canvas = np.zeros_like(frame2, np.uint8)
+    canvas[imask] = frame1[imask]
 
 
 #-----------resizing
-    image = cv2.resize(frame1, (0, 0), None, .47,.42)
+    image2 = cv2.resize(canvas, (0, 0), None, .47,.42)
+    image = cv2.resize(frame, (0, 0), None, .47,.42)
     Img = cv2.imread('mapmod.jpg') 
     Img= cv2.resize(Img, (0, 0), None, .9,1.25)
 
 #----------background subtraction
      
     #diff = cv2.absdiff(frame1,frame2)  
-    canvas = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    mask = morphTrans1(canvas)
+    image2 = cv2.cvtColor(image2, cv2.COLOR_BGR2GRAY)
+    mask = morphTrans(image2)
     
 
     im, cxx , cyy = drawContour(mask, image)
@@ -402,7 +411,7 @@ while(True):
     
 #------------showing the video transformation
     cv2.imshow('Morph',mask)
-    cv2.imshow('Track Movements',im)
+    cv2.imshow('Track Movements',image)
     cv2.imshow('Map',Img)
     if cv2.waitKey(1) & 0xFF == ord('q'): 
         break
